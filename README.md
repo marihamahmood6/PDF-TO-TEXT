@@ -2,13 +2,13 @@ PDF to Text Converter
 A Python desktop application that extracts text from PDFs and uses OCR for scanned pages and images.
 
 Features
-* Extract text from PDFs
-* OCR scanned/image-based pages
-* Process PDFs containing text and images
-* Preview extracted text
-* Show conversion progress
-* Export text as `.txt`
-* Cancel conversion
+Extract text from PDFs
+OCR scanned/image-based pages
+Process PDFs containing text and images
+Preview extracted text
+Show conversion progress
+Export text as `.txt`
+Cancel conversion
 
 Technologies
 Python — Main language
