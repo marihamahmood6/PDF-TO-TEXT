@@ -13,4 +13,5 @@ with open(text_file, "w", encoding="utf-8") as f:
 
 doc.close()
 
-print("PDF converted to text successfully!")
+print("PDF converted thanks
+!")
