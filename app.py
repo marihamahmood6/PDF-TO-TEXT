@@ -3,14 +3,9 @@ import os
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
- 
 import pymupdf
 import pytesseract
 from PIL import Image
- 
-# Point pytesseract at your Tesseract install (Windows path shown below).
-# On macOS/Linux, tesseract is usually already on PATH, so this line can be
-# commented out or wrapped as done here.
 pytesseract.pytesseract.tesseract_cmd = (
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )
@@ -43,8 +38,7 @@ class PDFConverterApp:
             self.status_label.config(
                 text="Tesseract not found - OCR disabled", fg="red"
             )
- 
-    # ---------- UI ----------
+
     def _build_ui(self):
         top_frame = tk.Frame(self.root, padx=10, pady=10)
         top_frame.pack(fill="x")
@@ -110,7 +104,6 @@ class PDFConverterApp:
         self.status_label = tk.Label(btn_frame, text="", fg="gray")
         self.status_label.pack(side="right")
  
-    # ---------- Actions ----------
     def browse_pdf(self):
         path = filedialog.askopenfilename(
             title="Select a PDF file",
