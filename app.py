@@ -1,3 +1,4 @@
+import os
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
@@ -84,7 +85,7 @@ class PDFConverterApp:
         if not path:
             return
         self.pdf_path = path
-        self.file_label.config(text=path, fg="black")
+        self.file_label.config(text=os.path.basename(path), fg="black")
         self.text_area.delete("1.0", tk.END)
         self.export_btn.config(state="disabled")
         self.convert_btn.config(state="normal")
@@ -192,4 +193,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = PDFConverterApp(root)
     root.mainloop()
- 
