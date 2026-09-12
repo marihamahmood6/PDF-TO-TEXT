@@ -1,9 +1,9 @@
-import fitz
+import pymupdf
 
-pdf_file = "input.pdf"
+pdf_file = "I'm so cool.pdf"
 text_file = "output.txt"
 
-doc = fitz.open(pdf_file)
+doc = pymupdf.open(pdf_file)
 
 with open(text_file, "w", encoding="utf-8") as f:
     for page in doc:
