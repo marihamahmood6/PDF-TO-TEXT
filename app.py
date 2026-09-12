@@ -4,9 +4,20 @@ from tkinter import filedialog, messagebox
 from tkinterdnd2 import DND_FILES, TkinterDnD
 
 
+# ==================================================
+# VARIABLES
+# ==================================================
+
+extracted_text = ""
+
+
+# ==================================================
+# EXTRACT TEXT FROM PDF
+# ==================================================
+
 def extract_text(pdf_path):
     """Extract text from a PDF."""
-    
+
     try:
         doc = pymupdf.open(pdf_path)
 
@@ -21,48 +32,68 @@ def extract_text(pdf_path):
         return text
 
     except Exception as e:
-        messagebox.showerror("Error", f"Could not read PDF:\n{e}")
+        messagebox.showerror(
+            "Error",
+            f"Could not read PDF:\n{e}"
+        )
+
         return ""
 
 
+# ==================================================
+# PROCESS PDF
+# ==================================================
+
 def process_pdf(pdf_path):
     """Process the selected PDF."""
-    
-    # Remove quotation marks added by drag-and-drop
+
+    global extracted_text
+
+    # Remove curly brackets from drag-and-drop paths
     pdf_path = pdf_path.strip("{}")
 
+    # Check if the file is a PDF
     if not pdf_path.lower().endswith(".pdf"):
         messagebox.showerror(
-            "Invalid file",
+            "Invalid File",
             "Please select a PDF file."
         )
         return
 
+    # Extract text
     text = extract_text(pdf_path)
 
+    # Check if text was found
     if not text.strip():
         messagebox.showwarning(
-            "No text found",
+            "No Text Found",
             "No text could be extracted from this PDF."
         )
         return
 
-    # Display text in the text box
+    # Store extracted text
+    extracted_text = text
+
+    # Display extracted text
     text_box.delete("1.0", tk.END)
     text_box.insert(tk.END, text)
 
-    # Store current text
-    global extracted_text
-    extracted_text = text
+    # Get file name
+    file_name = pdf_path.replace("\\", "/").split("/")[-1]
 
+    # Display file name
     file_label.config(
-        text=f"Loaded: {pdf_path.split('/')[-1]}"
+        text=f"Loaded: {file_name}"
     )
 
 
+# ==================================================
+# BROWSE PDF
+# ==================================================
+
 def browse_pdf():
-    """Open file browser."""
-    
+    """Open file browser and select a PDF."""
+
     file_path = filedialog.askopenfilename(
         title="Select PDF",
         filetypes=[
@@ -75,30 +106,39 @@ def browse_pdf():
         process_pdf(file_path)
 
 
+# ==================================================
+# DRAG AND DROP
+# ==================================================
+
 def drop_pdf(event):
-    """Handle drag and drop."""
-    
+    """Handle drag and drop PDF."""
+
     file_path = event.data
 
-    # Handle paths containing spaces
+    # Remove brackets added by drag and drop
     if file_path.startswith("{") and file_path.endswith("}"):
         file_path = file_path[1:-1]
 
     process_pdf(file_path)
 
 
-def download_text():
-    """Save extracted text as a TXT file."""
-    
+# ==================================================
+# EXPORT AS TXT
+# ==================================================
+
+def export_as_txt():
+    """Export extracted text as a TXT file."""
+
     if not extracted_text.strip():
         messagebox.showwarning(
-            "Nothing to download",
+            "Nothing to Export",
             "Please upload a PDF first."
         )
         return
 
+    # Ask user where to save the TXT file
     save_path = filedialog.asksaveasfilename(
-        title="Save text file",
+        title="Export as TXT",
         defaultextension=".txt",
         filetypes=[
             ("Text Files", "*.txt")
@@ -106,7 +146,9 @@ def download_text():
     )
 
     if save_path:
+
         try:
+
             with open(
                 save_path,
                 "w",
@@ -116,20 +158,25 @@ def download_text():
                 file.write(extracted_text)
 
             messagebox.showinfo(
-                "Success",
-                "Text file downloaded successfully!"
+                "Export Successful",
+                "Your text file has been exported successfully!"
             )
 
         except Exception as e:
+
             messagebox.showerror(
-                "Error",
-                f"Could not save file:\n{e}"
+                "Export Error",
+                f"Could not export the text file:\n{e}"
             )
 
 
+# ==================================================
+# CLEAR
+# ==================================================
+
 def clear_text():
-    """Clear the interface."""
-    
+    """Clear the extracted text."""
+
     global extracted_text
 
     extracted_text = ""
@@ -141,29 +188,37 @@ def clear_text():
     )
 
 
-# --------------------------------------------------
-# Application
-# --------------------------------------------------
-
-extracted_text = ""
+# ==================================================
+# APPLICATION WINDOW
+# ==================================================
 
 root = TkinterDnD.Tk()
 
 root.title("PDF to Text Converter")
-root.geometry("900x650")
 
-root.minsize(700, 500)
+root.geometry("900x700")
+
+root.minsize(700, 550)
 
 
-# Title
+# ==================================================
+# TITLE
+# ==================================================
+
 title = tk.Label(
     root,
     text="PDF TO TEXT",
     font=("Arial", 24, "bold")
 )
 
-title.pack(pady=(20, 5))
+title.pack(
+    pady=(25, 5)
+)
 
+
+# ==================================================
+# SUBTITLE
+# ==================================================
 
 subtitle = tk.Label(
     root,
@@ -171,10 +226,15 @@ subtitle = tk.Label(
     font=("Arial", 11)
 )
 
-subtitle.pack(pady=(0, 20))
+subtitle.pack(
+    pady=(0, 20)
+)
 
 
-# Drag and drop area
+# ==================================================
+# DRAG & DROP AREA
+# ==================================================
+
 drop_area = tk.Label(
     root,
     text="Drag & Drop PDF Here\n\nor\n\nClick Browse PDF",
@@ -186,102 +246,116 @@ drop_area = tk.Label(
 
 drop_area.pack(
     fill="x",
-    padx=50
+    padx=60,
+    pady=(0, 15)
 )
 
 
 # Enable drag and drop
 drop_area.drop_target_register(DND_FILES)
+
 drop_area.dnd_bind(
     "<<Drop>>",
     drop_pdf
 )
 
 
-# Browse button
+# ==================================================
+# BROWSE BUTTON
+# ==================================================
+
 browse_button = tk.Button(
     root,
     text="Browse PDF",
     command=browse_pdf,
-    font=("Arial", 11),
-    padx=20,
-    pady=8
+    font=("Arial", 11, "bold"),
+    padx=30,
+    pady=10,
+    cursor="hand2"
 )
 
-browse_button.pack(pady=15)
+browse_button.pack(
+    pady=(0, 10)
+)
 
 
-# File name
+# ==================================================
+# FILE NAME
+# ==================================================
+
 file_label = tk.Label(
     root,
     text="No PDF selected",
     font=("Arial", 10)
 )
 
-file_label.pack()
+file_label.pack(
+    pady=(0, 10)
+)
 
 
-# Text area
+# ==================================================
+# TEXT AREA
+# ==================================================
+
 text_box = tk.Text(
     root,
     wrap=tk.WORD,
-    font=("Consolas", 11)
+    font=("Consolas", 11),
+    padx=10,
+    pady=10
 )
 
 text_box.pack(
     fill="both",
     expand=True,
-    padx=50,
-    pady=15
+    padx=60,
+    pady=(0, 15)
 )
 
 
-# Buttons
+# ==================================================
+# BUTTON FRAME
+# ==================================================
+
 button_frame = tk.Frame(root)
 
-button_frame.pack(pady=15)
+button_frame.pack(
+    pady=(0, 25)
+)
 
+
+# ==================================================
+# CLEAR BUTTON
+# ==================================================
 
 clear_button = tk.Button(
     button_frame,
     text="Clear",
     command=clear_text,
-    font=("Arial", 11),
-    padx=25,
-    pady=8
+    font=("Arial", 11, "bold"),
+    padx=30,
+    pady=10,
+    cursor="hand2"
 )
 
 clear_button.pack(
     side="left",
-    padx=10
+    padx=8
 )
 
 
-download_button = tk.Button(
-    button_frame,
-    text="Download TXT",
-    command=download_text,
-    font=("Arial", 11),
-    padx=25,
-    pady=8
-)
+# ==================================================
+# EXPORT AS TXT BUTTON
+# ==================================================
 
-download_button.pack(
-    side="left",
-    padx=10
-)
-
-
-# Start application
-root.mainloop()
-# Export as TXT button
 export_button = tk.Button(
     button_frame,
     text="Export as TXT",
-    command=download_text,
+    command=export_as_txt,
     font=("Arial", 11, "bold"),
-    padx=25,
-    pady=8,
+    padx=30,
+    pady=10,
     bg="#FF69B4",
     fg="white",
     activebackground="#FF1493",
@@ -291,5 +365,12 @@ export_button = tk.Button(
 
 export_button.pack(
     side="left",
-    padx=10
+    padx=8
 )
+
+
+# ==================================================
+# START APPLICATION
+# ==================================================
+
+root.mainloop()
