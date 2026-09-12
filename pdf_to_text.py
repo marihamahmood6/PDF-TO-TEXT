@@ -1,6 +1,6 @@
 import pymupdf
 
-pdf_file = "I'm so cool.pdf"
+pdf_file = "Im so cool.pdf"
 text_file = "output.txt"
 
 doc = pymupdf.open(pdf_file)
