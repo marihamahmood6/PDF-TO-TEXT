@@ -274,3 +274,22 @@ download_button.pack(
 
 # Start application
 root.mainloop()
+# Export as TXT button
+export_button = tk.Button(
+    button_frame,
+    text="Export as TXT",
+    command=download_text,
+    font=("Arial", 11, "bold"),
+    padx=25,
+    pady=8,
+    bg="#FF69B4",
+    fg="white",
+    activebackground="#FF1493",
+    activeforeground="white",
+    cursor="hand2"
+)
+
+export_button.pack(
+    side="left",
+    padx=10
+)
