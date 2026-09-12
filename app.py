@@ -5,6 +5,19 @@ from tkinterdnd2 import DND_FILES, TkinterDnD
 
 
 # ==================================================
+# COLOR PALETTE
+# ==================================================
+
+BG_MAIN = "#2E1A47"        # deep purple background
+BG_PANEL = "#3D2463"       # slightly lighter purple for panels
+ACCENT_PINK = "#FF3E9A"    # export button
+ACCENT_BLUE = "#3EC6FF"    # browse button
+ACCENT_RED = "#FF5C5C"     # clear button
+TEXT_LIGHT = "#F5F0FF"
+DROP_BG = "#4B2E7A"
+
+
+# ==================================================
 # VARIABLES
 # ==================================================
 
@@ -189,6 +202,17 @@ def clear_text():
 
 
 # ==================================================
+# HOVER HELPERS
+# ==================================================
+
+def add_hover(widget, normal_color, hover_color):
+    """Lighten/darken a button on hover for a nicer feel."""
+
+    widget.bind("<Enter>", lambda e: widget.config(bg=hover_color))
+    widget.bind("<Leave>", lambda e: widget.config(bg=normal_color))
+
+
+# ==================================================
 # APPLICATION WINDOW
 # ==================================================
 
@@ -196,9 +220,11 @@ root = TkinterDnD.Tk()
 
 root.title("PDF to Text Converter")
 
-root.geometry("900x700")
+root.geometry("850x620")
 
-root.minsize(700, 550)
+root.minsize(650, 500)
+
+root.configure(bg=BG_MAIN)
 
 
 # ==================================================
@@ -208,11 +234,13 @@ root.minsize(700, 550)
 title = tk.Label(
     root,
     text="PDF TO TEXT",
-    font=("Arial", 24, "bold")
+    font=("Arial", 26, "bold"),
+    bg=BG_MAIN,
+    fg=ACCENT_PINK
 )
 
 title.pack(
-    pady=(25, 5)
+    pady=(15, 3)
 )
 
 
@@ -223,11 +251,13 @@ title.pack(
 subtitle = tk.Label(
     root,
     text="Convert your PDF into editable text",
-    font=("Arial", 11)
+    font=("Arial", 11),
+    bg=BG_MAIN,
+    fg=TEXT_LIGHT
 )
 
 subtitle.pack(
-    pady=(0, 20)
+    pady=(0, 10)
 )
 
 
@@ -237,17 +267,19 @@ subtitle.pack(
 
 drop_area = tk.Label(
     root,
-    text="Drag & Drop PDF Here\n\nor\n\nClick Browse PDF",
-    font=("Arial", 16),
-    relief="groove",
-    borderwidth=2,
-    height=8
+    text="⬇  Drag & Drop PDF Here  ⬇\n\nor\n\nClick Browse PDF",
+    font=("Arial", 16, "bold"),
+    relief="ridge",
+    borderwidth=3,
+    height=5,
+    bg=DROP_BG,
+    fg=TEXT_LIGHT
 )
 
 drop_area.pack(
     fill="x",
     padx=60,
-    pady=(0, 15)
+    pady=(0, 10)
 )
 
 
@@ -266,17 +298,24 @@ drop_area.dnd_bind(
 
 browse_button = tk.Button(
     root,
-    text="Browse PDF",
+    text="📂 Browse PDF",
     command=browse_pdf,
     font=("Arial", 11, "bold"),
     padx=30,
     pady=10,
+    bg=ACCENT_BLUE,
+    fg="white",
+    activebackground="#1EA8E0",
+    activeforeground="white",
+    relief="flat",
     cursor="hand2"
 )
 
 browse_button.pack(
-    pady=(0, 10)
+    pady=(0, 6)
 )
+
+add_hover(browse_button, ACCENT_BLUE, "#1EA8E0")
 
 
 # ==================================================
@@ -286,11 +325,13 @@ browse_button.pack(
 file_label = tk.Label(
     root,
     text="No PDF selected",
-    font=("Arial", 10)
+    font=("Arial", 10, "italic"),
+    bg=BG_MAIN,
+    fg=TEXT_LIGHT
 )
 
 file_label.pack(
-    pady=(0, 10)
+    pady=(0, 6)
 )
 
 
@@ -303,26 +344,42 @@ text_box = tk.Text(
     wrap=tk.WORD,
     font=("Consolas", 11),
     padx=10,
-    pady=10
+    pady=10,
+    bg=BG_PANEL,
+    fg=TEXT_LIGHT,
+    insertbackground=TEXT_LIGHT,
+    relief="flat"
 )
 
 text_box.pack(
     fill="both",
     expand=True,
     padx=60,
-    pady=(0, 15)
+    pady=(0, 10)
 )
 
 
 # ==================================================
-# BUTTON FRAME
+# BUTTON FRAME (fixed height so buttons always stay visible)
 # ==================================================
 
-button_frame = tk.Frame(root)
+button_frame = tk.Frame(
+    root,
+    bg=BG_MAIN,
+    height=60
+)
 
 button_frame.pack(
-    pady=(0, 25)
+    side="bottom",
+    fill="x",
+    pady=(0, 12)
 )
+
+button_frame.pack_propagate(False)
+
+# Centering sub-frame
+inner_button_frame = tk.Frame(button_frame, bg=BG_MAIN)
+inner_button_frame.pack(expand=True)
 
 
 # ==================================================
@@ -330,12 +387,17 @@ button_frame.pack(
 # ==================================================
 
 clear_button = tk.Button(
-    button_frame,
-    text="Clear",
+    inner_button_frame,
+    text="🗑 Clear",
     command=clear_text,
     font=("Arial", 11, "bold"),
     padx=30,
     pady=10,
+    bg=ACCENT_RED,
+    fg="white",
+    activebackground="#D94444",
+    activeforeground="white",
+    relief="flat",
     cursor="hand2"
 )
 
@@ -344,22 +406,25 @@ clear_button.pack(
     padx=8
 )
 
+add_hover(clear_button, ACCENT_RED, "#D94444")
+
 
 # ==================================================
 # EXPORT AS TXT BUTTON
 # ==================================================
 
 export_button = tk.Button(
-    button_frame,
-    text="Export as TXT",
+    inner_button_frame,
+    text="⬇ Export as TXT",
     command=export_as_txt,
     font=("Arial", 11, "bold"),
     padx=30,
     pady=10,
-    bg="#FF69B4",
+    bg=ACCENT_PINK,
     fg="white",
-    activebackground="#FF1493",
+    activebackground="#D8007E",
     activeforeground="white",
+    relief="flat",
     cursor="hand2"
 )
 
@@ -367,6 +432,8 @@ export_button.pack(
     side="left",
     padx=8
 )
+
+add_hover(export_button, ACCENT_PINK, "#D8007E")
 
 
 # ==================================================
